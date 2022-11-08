@@ -1,5 +1,5 @@
-#include "GameObject.h"
-#include "TextureManager.h"
+#include "headers/GameObject.h"
+#include "headers/TextureManager.h"
 
 GameObject::GameObject(const char* texturesheet, int x, int y, int w, int h) {
 	objTexture = TextureManager::loadTexture(texturesheet);

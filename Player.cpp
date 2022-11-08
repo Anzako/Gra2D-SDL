@@ -1,4 +1,4 @@
-#include "Player.h"
+#include "headers/Player.h"
 
 Player::Player(float x, float y) {
 	position = { x, y };

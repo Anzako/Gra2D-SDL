@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
-#include "myVector.h"
-#include "Game.h"
+#include "headers/myVector.h"
+#include "headers/Game.h"
 
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 800;

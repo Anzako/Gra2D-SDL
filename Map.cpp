@@ -1,5 +1,5 @@
-#include "Map.h"
-#include "TextureManager.h"
+#include "headers/Map.h"
+#include "headers/TextureManager.h"
 #include <fstream>
 
 Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize) {
@@ -26,7 +26,7 @@ Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize
 
 void Map::loadMap() {
 	int number;
-	std::ifstream mapFile("mapFile.txt");
+	std::ifstream mapFile("assets/mapFile.txt");
 	if (!mapFile.is_open()) {
 		std::cout << "duapa" << " \n";
 	} else {
@@ -57,19 +57,19 @@ void Map::drawMap(int cameraX, int cameraY) {
 
 			switch (type) {
 				case 0:
-					TextureManager::drawTile(grass, src, dest);
+					TextureManager::drawTile(grass, src, dest, NULL);
 					break;
 				case 1:
-					TextureManager::drawTile(water, src, dest);
+					TextureManager::drawTile(water, src, dest, NULL);
 					break;
 				case 2:
-					TextureManager::drawTile(dirt, src, dest);
+					TextureManager::drawTile(dirt, src, dest, NULL);
 					break;
 				case 3:
-					TextureManager::drawTile(brick, src, dest);
+					TextureManager::drawTile(brick, src, dest, NULL);
 					break;
 				case 4:
-					TextureManager::drawTile(floor, src, dest);
+					TextureManager::drawTile(floor, src, dest, NULL);
 					break;
 			}
 		}

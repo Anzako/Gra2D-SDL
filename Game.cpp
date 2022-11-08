@@ -1,7 +1,7 @@
-#include "Game.h"
-#include "GameObject.h"
-#include "TextureManager.h"
-#include "Map.h"
+#include "headers/Game.h"
+#include "headers/GameObject.h"
+#include "headers/TextureManager.h"
+#include "headers/Map.h"
 
 Map* map;
 
@@ -19,10 +19,14 @@ Game::Game(int width, int height) {
 
 	// ----------------------------------- || -----------------------------------------
 
-	player1_Speed = 0.6;
+	//Player 1
+	playerSpeed = 0.6;
 	position = { 20, 20 };
 	directionPlayer = { 0, 0 };
-	circleColor = { 94, 114, 0, 127 };
+
+	// Player 2
+	posX = posY = 0;
+	circleColor = { 94, 114, 0, 100 };
 }
 
 Game::~Game() {}
@@ -153,8 +157,9 @@ bool Game::update() {
 	
 	// ------------------------- MOVEMENT --------------------------------------
 
+	// Movement of Player 1 
 	myVector movement = directionPlayer.normalize();
-	movement.ScalarMultiply((float)deltaTime * (float)player1_Speed);
+	movement.ScalarMultiply((float)deltaTime * (float)playerSpeed);
 	position.Add(movement);
 
 	// top and left borders
@@ -165,11 +170,23 @@ bool Game::update() {
 	if (position.getX() > map->columns * 40 - 40) position.setX(map->columns * 40 - 40);
 	if (position.getY() > map->rows * 40 - 40) position.setY(map->rows * 40 - 40);
 	
+	// Movement of Player 2
+	if (mouseX <= 0) {
+		posX = 0;
+	}
+	else if (mouseX > map->columns * 40 - 40) {
+		posX = map->columns * 40 - 40;
+	}
+	else {
+		posX = mouseX;
+	}
+	
+	posY = mouseY;
 
 	// --------------------------- CAMERA -----------------------------------
 	// camera track the player
 	cameraRect.x = position.getX() - ScreenWidth / 2;
-	cameraRect.y = position.getY() - 400;
+	cameraRect.y = position.getY() - ScreenHeight / 2;
 
 	// camera stop tracking when comes to end of map
 	if (cameraRect.x < 0) cameraRect.x = 0;
@@ -180,15 +197,16 @@ bool Game::update() {
 
 	SDL_RenderClear(gRenderer);
 	map->drawMap(cameraRect.x, cameraRect.y);
-	// Player
+
+	// Player 1 display on screen
 	SDL_Rect player1Rect = { position.getX() - cameraRect.x, position.getY() - cameraRect.y, 40, 40 };
 	SDL_Rect src = { 0, 0, 40, 40 };
 	SDL_Texture* draco = TextureManager::loadTexture("assets/draco.png");
 	
-	TextureManager::drawTile(draco, src, player1Rect);
+	TextureManager::drawTile(draco, src, player1Rect, 126);
 
-	// kolo
-	//drawCircle(gRenderer, mouseX, mouseY, 40, circleColor);
+	// Player 2 display on screen
+	drawCircle(gRenderer, posX, posY, 40, circleColor);
 
 	SDL_RenderPresent(gRenderer);
 	return quit;

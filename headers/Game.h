@@ -38,15 +38,14 @@ private:
 
 	// ----------------------------------- || -----------------------------------------
 
-	Player* player;
+	//Player* player;
 
-	double player1_Speed;
-
-	// vectors
+	double playerSpeed;
 	myVector position;
 	myVector directionPlayer;
 
 	int mouseX, mouseY;
+	int posX, posY;
 	SDL_Color circleColor;
 	
 

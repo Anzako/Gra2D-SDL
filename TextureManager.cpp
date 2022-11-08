@@ -1,4 +1,4 @@
-#include "TextureManager.h"
+#include "headers/TextureManager.h"
 
 SDL_Texture* TextureManager::loadTexture(const char* path)
 {
@@ -23,7 +23,10 @@ SDL_Texture* TextureManager::loadTexture(const char* path)
 	return newTexture;
 }
 
-void TextureManager::drawTile(SDL_Texture* texture, SDL_Rect src, SDL_Rect dest) {
+void TextureManager::drawTile(SDL_Texture* texture, SDL_Rect src, SDL_Rect dest, Uint8 alpha) {
+	if (alpha != NULL) {
+		SDL_SetTextureAlphaMod(texture, alpha);
+	}
 	SDL_RenderCopy(Game::gRenderer, texture, &src, &dest);
 }
 

@@ -24,7 +24,7 @@
     <ProjectGuid>{24abf98b-a1a8-46d8-b3ff-2d95578f2e3c}</ProjectGuid>
     <RootNamespace>zad12d</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>zad2_236588</ProjectName>
+    <ProjectName>2Dgierki</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -142,12 +142,12 @@
     <ClCompile Include="zad1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="myVector.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="headers\Game.h" />
+    <ClInclude Include="headers\GameObject.h" />
+    <ClInclude Include="headers\Map.h" />
+    <ClInclude Include="headers\myVector.h" />
+    <ClInclude Include="headers\Player.h" />
+    <ClInclude Include="headers\TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

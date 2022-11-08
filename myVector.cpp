@@ -1,4 +1,4 @@
-#include "myVector.h"
+#include "headers/myVector.h"
 #include <iostream>
 
 myVector::myVector()
