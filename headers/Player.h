@@ -5,15 +5,17 @@
 
 class Player {
 public:
-	Player(float x, float y);
+	Player(float x, float y, float speed, const char* texName, int width, int height);
 	void load();
-	void update(const Uint8* state, float deltaTime);
-	void draw();
+	void update(myVector direction, float deltaTime);
+	void draw(float cameraX, float cameraY);
+	myVector getPosition();
 
 private:
 	float speed;
 	myVector position;
-	myVector direction;
-
-
+	myVector movement;
+	const char* textureName;
+	int mapWidth;
+	int mapHeight;
 };

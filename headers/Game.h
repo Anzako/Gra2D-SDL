@@ -2,7 +2,6 @@
 #include <SDL_image.h>
 #include <iostream>
 #include "myVector.h"
-#include "Player.h"
 
 class Game {
 public:
@@ -37,16 +36,8 @@ private:
 	double deltaTime;
 
 	// ----------------------------------- || -----------------------------------------
-
-	//Player* player;
-
-	double playerSpeed;
-	myVector position;
-	myVector directionPlayer;
+	myVector directionPlayer1;
+	myVector directionPlayer2;
 
 	int mouseX, mouseY;
-	int posX, posY;
-	SDL_Color circleColor;
-	
-
 };

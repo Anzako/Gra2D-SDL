@@ -2,10 +2,16 @@
 #include "headers/GameObject.h"
 #include "headers/TextureManager.h"
 #include "headers/Map.h"
+#include "headers/Player.h"
 
 Map* map;
+Player* player1;
+Player* player2;
 
 SDL_Renderer* Game::gRenderer = nullptr;
+
+const int JOYSTICK_DEAD_ZONE = 8000;
+SDL_Joystick* gGameController = NULL;
 
 Game::Game(int width, int height) {
 	// delta time
@@ -16,17 +22,11 @@ Game::Game(int width, int height) {
 	ScreenWidth = width;
 	ScreenHeight = height;
 	TileSize = 40;
+	//int mapWidth;		dodac
+	//int maHeight;
 
-	// ----------------------------------- || -----------------------------------------
-
-	//Player 1
-	playerSpeed = 0.6;
-	position = { 20, 20 };
-	directionPlayer = { 0, 0 };
-
-	// Player 2
-	posX = posY = 0;
-	circleColor = { 94, 114, 0, 100 };
+	directionPlayer1 = { 0, 0 };
+	directionPlayer2 = { 0, 0 };
 }
 
 Game::~Game() {}
@@ -34,7 +34,7 @@ Game::~Game() {}
 bool Game::init(const char* title, bool fullscreen) {
 	bool success = true;
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
 	{
 		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		success = false;
@@ -44,6 +44,19 @@ bool Game::init(const char* title, bool fullscreen) {
 		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 		{
 			printf("Warning: Linear texture filtering not enabled!");
+		}
+		if (SDL_NumJoysticks() < 1)
+		{
+			printf("Warning: No joysticks connected!\n");
+		}
+		else
+		{
+			//Load joystick
+			gGameController = SDL_JoystickOpen(0);
+			if (gGameController == NULL)
+			{
+				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+			}
 		}
 
 		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN);
@@ -73,6 +86,8 @@ bool Game::init(const char* title, bool fullscreen) {
 			}
 		}
 		map = new Map(25, 30, ScreenWidth, ScreenHeight, 40);
+		player1 = new Player(0, 0, 0.5, "assets/draco.png", map->columns * 40, map->rows * 40);
+		player2 = new Player(30, 30, 0.5, "assets/draco.png", map->columns * 40, map->rows * 40);
 	}
 
 	return success;
@@ -128,6 +143,45 @@ bool Game::update() {
 		{
 			quit = true;
 		}
+		else if (e.type == SDL_JOYAXISMOTION)
+		{
+			//Motion on controller 0
+			if (e.jaxis.which == 0)
+			{
+				//X axis motion
+				if (e.jaxis.axis == 0)
+				{
+					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					{
+						directionPlayer2.setX(-1.0f);
+					}
+					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+					{
+						directionPlayer2.setX(1.0f);
+					}
+					else
+					{
+						directionPlayer2.setX(0.0f);
+					}
+				}
+				//Y axis motion
+				else if (e.jaxis.axis == 1)
+				{
+					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					{
+						directionPlayer2.setY(-1.0f);
+					}
+					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+					{
+						directionPlayer2.setY(1.0f);
+					}
+					else
+					{
+						directionPlayer2.setY(0.0f);
+					}
+				}
+			}
+		}
 
 		const Uint8* state = SDL_GetKeyboardState(NULL);
 		if (SDL_GetMouseState(&mouseX, &mouseY)) {
@@ -135,78 +189,46 @@ bool Game::update() {
 		}
 
 		if (state[SDL_SCANCODE_UP]) {
-			directionPlayer.setY(-1.0f);
+			directionPlayer1.setY(-1.0f);
 			std::cout << "Keyboard: UP \n";
 		}
 		else if (state[SDL_SCANCODE_DOWN]) {
-			directionPlayer.setY(1.0f);
+			directionPlayer1.setY(1.0f);
 			std::cout << "Keyboard: DOWN \n";
 		}
-		else directionPlayer.setY(0.0f);
+		else directionPlayer1.setY(0.0f);
 
 		if (state[SDL_SCANCODE_RIGHT]) {
-			directionPlayer.setX(1.0f);
+			directionPlayer1.setX(1.0f);
 			std::cout << "Keyboard: RIGHT \n";
 		}
 		else if (state[SDL_SCANCODE_LEFT]) {
-			directionPlayer.setX(-1.0f);
+			directionPlayer1.setX(-1.0f);
 			std::cout << "Keyboard: LEFT \n";
 		}
-		else directionPlayer.setX(0.0f);
+		else directionPlayer1.setX(0.0f);
 	}
-	
-	// ------------------------- MOVEMENT --------------------------------------
-
-	// Movement of Player 1 
-	myVector movement = directionPlayer.normalize();
-	movement.ScalarMultiply((float)deltaTime * (float)playerSpeed);
-	position.Add(movement);
-
-	// top and left borders
-	if (position.getX() < 0) position.setX(0);
-	if (position.getY() < 0) position.setY(0);
-
-	// right and down borders
-	if (position.getX() > map->columns * 40 - 40) position.setX(map->columns * 40 - 40);
-	if (position.getY() > map->rows * 40 - 40) position.setY(map->rows * 40 - 40);
-	
-	// Movement of Player 2
-	if (mouseX <= 0) {
-		posX = 0;
-	}
-	else if (mouseX > map->columns * 40 - 40) {
-		posX = map->columns * 40 - 40;
-	}
-	else {
-		posX = mouseX;
-	}
-	
-	posY = mouseY;
 
 	// --------------------------- CAMERA -----------------------------------
 	// camera track the player
-	cameraRect.x = position.getX() - ScreenWidth / 2;
-	cameraRect.y = position.getY() - ScreenHeight / 2;
+	cameraRect.x = player1->getPosition().getX() - ScreenWidth / 2;
+	cameraRect.y = player1->getPosition().getY() - ScreenHeight / 2;
 
 	// camera stop tracking when comes to end of map
 	if (cameraRect.x < 0) cameraRect.x = 0;
 	if (cameraRect.y < 0) cameraRect.y = 0;
 	if (cameraRect.x > map->columns * 40 - ScreenWidth) cameraRect.x = map->columns * 40 - ScreenWidth;
 	if (cameraRect.y > map->rows * 40 - ScreenHeight) cameraRect.y = map->rows * 40 - ScreenHeight;
-	
 
 	SDL_RenderClear(gRenderer);
 	map->drawMap(cameraRect.x, cameraRect.y);
 
 	// Player 1 display on screen
-	SDL_Rect player1Rect = { position.getX() - cameraRect.x, position.getY() - cameraRect.y, 40, 40 };
-	SDL_Rect src = { 0, 0, 40, 40 };
-	SDL_Texture* draco = TextureManager::loadTexture("assets/draco.png");
-	
-	TextureManager::drawTile(draco, src, player1Rect, 126);
+	player1->update(directionPlayer1, (float)deltaTime);
+	player1->draw(cameraRect.x, cameraRect.y);
 
-	// Player 2 display on screen
-	drawCircle(gRenderer, posX, posY, 40, circleColor);
+	player2->update(directionPlayer2, (float)deltaTime);
+	player2->draw(cameraRect.x, cameraRect.y);
 
 	SDL_RenderPresent(gRenderer);
 	return quit;
@@ -219,6 +241,9 @@ void Game::close()
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	gRenderer = NULL;
+
+	SDL_JoystickClose(gGameController);
+	gGameController = NULL;
 
 	IMG_Quit();
 	SDL_Quit();
