@@ -15,7 +15,7 @@ void Player::load() {
 
 }
 
-void Player::update(myVector direction, float deltaTime) {
+void Player::update(myVector direction, float deltaTime, float cameraX, int scaledScreenWidth) {
 	movement = direction.normalize();
 	movement.ScalarMultiply(deltaTime * speed);
 	position.Add(movement);
@@ -25,9 +25,16 @@ void Player::update(myVector direction, float deltaTime) {
 	if (position.getY() < 0) position.setY(0);
 
 	// right and down borders
-	if (position.getX() > mapWidth - 40) { position.setX(mapWidth - 40); std::cout << "here comes border"; }
+	if (position.getX() > mapWidth - 40)  position.setX(mapWidth - 40);
 	if (position.getY() > mapHeight - 40) position.setY(mapHeight - 40);
 
+	// borders for players not to go away from screen
+	//std::cout << cameraX + scaledScreenWidth << std::endl;
+	//std::cout << position.getX() << std::endl;
+	/*if (isMoving() && position.getX() > cameraX + scaledScreenWidth - 50) {
+		std::cout << "DUPA " << cameraX + scaledScreenWidth - 50 << std::endl;
+		position.setX(cameraX + scaledScreenWidth - 50);
+	}*/
 }
 
 void Player::draw(float cameraX, float cameraY) {
@@ -39,4 +46,12 @@ void Player::draw(float cameraX, float cameraY) {
 
 myVector Player::getPosition() {
 	return position;
+}
+
+bool Player::isMoving() {
+	bool move = true;
+	if (movement.getX() == 0 && movement.getY() == 0) {
+		move = false;
+	}
+	return move;
 }

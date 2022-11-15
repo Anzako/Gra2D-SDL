@@ -7,6 +7,7 @@
 Map* map;
 Player* player1;
 Player* player2;
+float scale = 1;
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
@@ -85,7 +86,7 @@ bool Game::init(const char* title, bool fullscreen) {
 				}
 			}
 		}
-		map = new Map(25, 30, ScreenWidth, ScreenHeight, 40);
+		map = new Map(25, 40, ScreenWidth, ScreenHeight, 40);
 		player1 = new Player(0, 0, 0.5, "assets/draco.png", map->columns * 40, map->rows * 40);
 		player2 = new Player(30, 30, 0.5, "assets/draco.png", map->columns * 40, map->rows * 40);
 	}
@@ -143,7 +144,8 @@ bool Game::update() {
 		{
 			quit = true;
 		}
-		else if (e.type == SDL_JOYAXISMOTION)
+
+		if (e.type == SDL_JOYAXISMOTION)
 		{
 			//Motion on controller 0
 			if (e.jaxis.which == 0)
@@ -184,56 +186,91 @@ bool Game::update() {
 		}
 
 		const Uint8* state = SDL_GetKeyboardState(NULL);
-		if (SDL_GetMouseState(&mouseX, &mouseY)) {
-			//std::cout << "Mouse X position: " << mouseX << "  |  Mouse Y position: " << mouseY << "\n";
-		}
-
+		
 		if (state[SDL_SCANCODE_UP]) {
 			directionPlayer1.setY(-1.0f);
-			std::cout << "Keyboard: UP \n";
+			//std::cout << "Keyboard: UP \n";
 		}
 		else if (state[SDL_SCANCODE_DOWN]) {
 			directionPlayer1.setY(1.0f);
-			std::cout << "Keyboard: DOWN \n";
+			//std::cout << "Keyboard: DOWN \n";
 		}
 		else directionPlayer1.setY(0.0f);
 
 		if (state[SDL_SCANCODE_RIGHT]) {
 			directionPlayer1.setX(1.0f);
-			std::cout << "Keyboard: RIGHT \n";
+			//std::cout << "Keyboard: RIGHT \n";
 		}
 		else if (state[SDL_SCANCODE_LEFT]) {
 			directionPlayer1.setX(-1.0f);
-			std::cout << "Keyboard: LEFT \n";
+			//std::cout << "Keyboard: LEFT \n";
 		}
 		else directionPlayer1.setX(0.0f);
+		
+		
+		if (SDL_GetMouseState(&mouseX, &mouseY)) {
+			//std::cout << "Mouse X position: " << mouseX << "  |  Mouse Y position: " << mouseY << "\n";
+		}
 	}
 
+	int scaledScreenWidth = (int)(ScreenWidth / scale);
+	int scaledScreenHeight = (int)(ScreenHeight / scale);
+	float maxScale = 0.8;
+
+	// skalowanie obrazu
+	SDL_RenderSetScale(gRenderer, scale, scale);
+
 	// --------------------------- CAMERA -----------------------------------
-	// camera track the player
-	cameraRect.x = player1->getPosition().getX() - ScreenWidth / 2;
-	cameraRect.y = player1->getPosition().getY() - ScreenHeight / 2;
+	// camera track 2 players
+
+	int distancePlayersX = abs(player1->getPosition().getX() - player2->getPosition().getX()) - 40;
+	int distancePlayersY = abs(player1->getPosition().getY() - player2->getPosition().getY()) - 40;
+
+	if (player1->getPosition().getX() > player2->getPosition().getX()) {
+		cameraRect.x = player2->getPosition().getX() + distancePlayersX/2 - scaledScreenWidth / 2;
+	} else cameraRect.x = player1->getPosition().getX() + distancePlayersX/2 - scaledScreenWidth / 2;
+
+	if (player1->getPosition().getY() > player2->getPosition().getY()) {
+		cameraRect.y = player2->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
+	}
+	else cameraRect.y = player1->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
+
+	//std::cout << cameraRect.x << std::endl;
+	if ((distancePlayersX > scaledScreenWidth - 160 || distancePlayersY > scaledScreenHeight - 160)
+		&& (player1->isMoving() || player2->isMoving())) {
+		if (scale - 0.01 > maxScale) {
+			scale -= 0.01;
+			//std::cout << scale << std::endl;
+		}
+	} else if ((distancePlayersX < scaledScreenWidth - 160 || distancePlayersY < scaledScreenHeight - 160)
+		&& (player1->isMoving() || player2->isMoving())) {
+		//std::cout << "DUPA" << std::endl;
+		if (!(scale + 0.01 >= 1)) {
+				scale += 0.01;
+			}
+		} 
 
 	// camera stop tracking when comes to end of map
 	if (cameraRect.x < 0) cameraRect.x = 0;
 	if (cameraRect.y < 0) cameraRect.y = 0;
-	if (cameraRect.x > map->columns * 40 - ScreenWidth) cameraRect.x = map->columns * 40 - ScreenWidth;
-	if (cameraRect.y > map->rows * 40 - ScreenHeight) cameraRect.y = map->rows * 40 - ScreenHeight;
+	if (cameraRect.x > map->columns * 40 - scaledScreenWidth) cameraRect.x = map->columns * 40 - scaledScreenWidth;
+	if (cameraRect.y > map->rows * 40 - scaledScreenHeight) cameraRect.y = map->rows * 40 - scaledScreenHeight;
 
+	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
 	SDL_RenderClear(gRenderer);
-	map->drawMap(cameraRect.x, cameraRect.y);
+	map->drawMap(cameraRect.x, cameraRect.y, scale);
 
 	// Player 1 display on screen
-	player1->update(directionPlayer1, (float)deltaTime);
+	player1->update(directionPlayer1, (float)deltaTime, cameraRect.x, scaledScreenWidth);
 	player1->draw(cameraRect.x, cameraRect.y);
+	//std::cout << player1->getPosition().getX() << std::endl;
 
-	player2->update(directionPlayer2, (float)deltaTime);
+	player2->update(directionPlayer2, (float)deltaTime, cameraRect.x, scaledScreenWidth);
 	player2->draw(cameraRect.x, cameraRect.y);
 
 	SDL_RenderPresent(gRenderer);
 	return quit;
 }
-
 
 void Game::close()
 {

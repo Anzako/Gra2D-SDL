@@ -10,7 +10,7 @@ public:
 	int sWidth, sHeight;
 	int tSize;
 	void loadMap();
-	void drawMap(int cameraX, int cameraY);
+	void drawMap(int cameraX, int cameraY, float scale);
 
 private:
 	SDL_Rect src, dest;
