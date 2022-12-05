@@ -54,6 +54,14 @@ myVector& myVector::Subtract(const myVector& vec)
 	return *this;
 }
 
+myVector& myVector::Subtract(const myVector& vec1, const myVector& vec2) {
+	float x = vec1.x - vec2.x;
+	float y = vec1.y - vec2.y;
+
+	myVector wektor = {x, y};
+	return wektor;
+}
+
 myVector& myVector::ScalarMultiply(float scalar)
 {
 	this->x *= scalar;
@@ -78,6 +86,14 @@ myVector& myVector::Divide(const myVector& vec)
 	return *this;
 }
 
+myVector& myVector::ScalarDivide(float scalar)
+{
+	this->x /= scalar;
+	this->y /= scalar;
+
+	return *this;
+}
+
 float myVector::length()
 {
 	return sqrt(this->x * this->x + this->y * this->y);
@@ -98,4 +114,8 @@ myVector& myVector::normalize()
 	
 	
 	return *this;
+}
+
+bool myVector::Equals(const myVector& vec1, const myVector& vec2) {
+	return (vec1.x == vec2.x && vec1.y == vec2.y);
 }

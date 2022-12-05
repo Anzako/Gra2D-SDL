@@ -7,7 +7,7 @@
 #include "headers/Game.h"
 
 const int SCREEN_WIDTH = 1000;
-const int SCREEN_HEIGHT = 800;
+const int SCREEN_HEIGHT = 700;
 
 Game* game = nullptr;
 const Uint8* state = SDL_GetKeyboardState(NULL);

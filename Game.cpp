@@ -87,8 +87,8 @@ bool Game::init(const char* title, bool fullscreen) {
 			}
 		}
 		map = new Map(25, 40, ScreenWidth, ScreenHeight, 40);
-		player1 = new Player(0, 0, 0.5, "assets/draco.png", map->columns * 40, map->rows * 40);
-		player2 = new Player(30, 30, 0.5, "assets/draco.png", map->columns * 40, map->rows * 40);
+		player1 = new Player(0, 0, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40);
+		player2 = new Player(30, 30, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40);
 	}
 
 	return success;
@@ -259,14 +259,12 @@ bool Game::update() {
 	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
 	SDL_RenderClear(gRenderer);
 	map->drawMap(cameraRect.x, cameraRect.y, scale);
-
-	// Player 1 display on screen
-	player1->update(directionPlayer1, (float)deltaTime, cameraRect.x, scaledScreenWidth);
 	player1->draw(cameraRect.x, cameraRect.y);
-	//std::cout << player1->getPosition().getX() << std::endl;
-
-	player2->update(directionPlayer2, (float)deltaTime, cameraRect.x, scaledScreenWidth);
 	player2->draw(cameraRect.x, cameraRect.y);
+
+	player1->update(directionPlayer1, (float)deltaTime, cameraRect.x, scaledScreenWidth);
+	player2->update(directionPlayer2, (float)deltaTime, cameraRect.x, scaledScreenWidth);
+	map->checkCollision(player1);
 
 	SDL_RenderPresent(gRenderer);
 	return quit;

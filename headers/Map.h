@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include "Player.h"
 
 class Map {
 public:
@@ -11,6 +12,7 @@ public:
 	int tSize;
 	void loadMap();
 	void drawMap(int cameraX, int cameraY, float scale);
+	void checkCollision(Player* player);
 
 private:
 	SDL_Rect src, dest;

@@ -8,6 +8,7 @@ Player::Player(float x, float y, float Speed, const char* texName, int width, in
 	speed = Speed;
 	mapWidth = width;
 	mapHeight = height;
+	colider = new PlayerColider(20);
 }
 
 void Player::load() {
@@ -48,10 +49,39 @@ myVector Player::getPosition() {
 	return position;
 }
 
+void Player::setPositionX(float x) {
+	this->position.setX(x);
+}
+
+void Player::setPositionY(float y) {
+	this->position.setY(y);
+}
+
 bool Player::isMoving() {
 	bool move = true;
 	if (movement.getX() == 0 && movement.getY() == 0) {
 		move = false;
 	}
 	return move;
+}
+
+bool Player::getCollisionType() {
+	return colider->getColisionType();
+}
+
+float Player::getHeight() {
+	return this->colider->getHeight();
+}
+
+float Player::getWidth() {
+	return this->colider->getWidth();
+}
+
+
+float Player::getRadius() {
+	return this->colider->getRadius();
+}
+
+void Player::addPosition(myVector wektor) {
+	this->position.Add(wektor);
 }
