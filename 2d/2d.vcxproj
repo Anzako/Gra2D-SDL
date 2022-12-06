@@ -94,8 +94,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\USER\Desktop\dwuwymiarowe\sdl2_vs\SDL2-2.26.0\include;C:\Users\USER\Desktop\dwuwymiarowe\SDL2_image-2.6.2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\USER\Desktop\dwuwymiarowe\sdl2_vs\SDL2-2.26.0\lib\x64;C:\Users\USER\Desktop\dwuwymiarowe\SDL2_image-2.6.2\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\USER\Desktop\dwuwymiarowe\sdl2_vs\SDL2-2.26.0\include;C:\Users\USER\Desktop\dwuwymiarowe\SDL2_image-2.6.2\include;C:\Users\antol\sdl2_vs\SDL2-2.24.1\include;C:\Windows\SysWOW64\SDL2_image-2.6.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\USER\Desktop\dwuwymiarowe\sdl2_vs\SDL2-2.26.0\lib\x64;C:\Users\USER\Desktop\dwuwymiarowe\SDL2_image-2.6.2\lib\x64;C:\Users\antol\sdl2_vs\SDL2-2.24.1\lib\x64;C:\Windows\SysWOW64\SDL2_image-2.6.2\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\USER\Desktop\dwuwymiarowe\sdl2_vs\SDL2-2.26.0\include;C:\Users\USER\Desktop\dwuwymiarowe\SDL2_image-2.6.2\include;$(IncludePath)</IncludePath>

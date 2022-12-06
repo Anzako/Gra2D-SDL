@@ -28,6 +28,8 @@ Game::Game(int width, int height) {
 
 	directionPlayer1 = { 0, 0 };
 	directionPlayer2 = { 0, 0 };
+
+	player2keyboardControl = false;
 }
 
 Game::~Game() {}
@@ -48,6 +50,7 @@ bool Game::init(const char* title, bool fullscreen) {
 		}
 		if (SDL_NumJoysticks() < 1)
 		{
+			player2keyboardControl = true;
 			printf("Warning: No joysticks connected!\n");
 		}
 		else
@@ -56,6 +59,7 @@ bool Game::init(const char* title, bool fullscreen) {
 			gGameController = SDL_JoystickOpen(0);
 			if (gGameController == NULL)
 			{
+				player2keyboardControl = true;
 				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
 			}
 		}
@@ -87,8 +91,10 @@ bool Game::init(const char* title, bool fullscreen) {
 			}
 		}
 		map = new Map(25, 40, ScreenWidth, ScreenHeight, 40);
-		player1 = new Player(0, 0, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40);
-		player2 = new Player(30, 30, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40);
+		PlayerColider* colider1 = new PlayerColider(20);
+		PlayerColider* colider2 = new PlayerColider(40, 40);
+		player1 = new Player(0, 0, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider1);
+		player2 = new Player(30, 30, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider2);
 	}
 
 	return success;
@@ -189,24 +195,37 @@ bool Game::update() {
 		
 		if (state[SDL_SCANCODE_UP]) {
 			directionPlayer1.setY(-1.0f);
-			//std::cout << "Keyboard: UP \n";
 		}
 		else if (state[SDL_SCANCODE_DOWN]) {
 			directionPlayer1.setY(1.0f);
-			//std::cout << "Keyboard: DOWN \n";
 		}
 		else directionPlayer1.setY(0.0f);
 
 		if (state[SDL_SCANCODE_RIGHT]) {
 			directionPlayer1.setX(1.0f);
-			//std::cout << "Keyboard: RIGHT \n";
 		}
 		else if (state[SDL_SCANCODE_LEFT]) {
 			directionPlayer1.setX(-1.0f);
-			//std::cout << "Keyboard: LEFT \n";
 		}
 		else directionPlayer1.setX(0.0f);
 		
+		if (player2keyboardControl) {
+			if (state[SDL_SCANCODE_W]) {
+				directionPlayer2.setY(-1.0f);
+			}
+			else if (state[SDL_SCANCODE_S]) {
+				directionPlayer2.setY(1.0f);
+			}
+			else directionPlayer2.setY(0.0f);
+
+			if (state[SDL_SCANCODE_D]) {
+				directionPlayer2.setX(1.0f);
+			}
+			else if (state[SDL_SCANCODE_A]) {
+				directionPlayer2.setX(-1.0f);
+			}
+			else directionPlayer2.setX(0.0f);
+		}
 		
 		if (SDL_GetMouseState(&mouseX, &mouseY)) {
 			//std::cout << "Mouse X position: " << mouseX << "  |  Mouse Y position: " << mouseY << "\n";
@@ -235,17 +254,15 @@ bool Game::update() {
 	}
 	else cameraRect.y = player1->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
 
-	//std::cout << cameraRect.x << std::endl;
+
 	if ((distancePlayersX > scaledScreenWidth - 160 || distancePlayersY > scaledScreenHeight - 160)
 		&& (player1->isMoving() || player2->isMoving())) {
 		if (scale - 0.01 > maxScale) {
 			scale -= 0.01;
-			//std::cout << scale << std::endl;
 		}
 	} else if ((distancePlayersX < scaledScreenWidth - 160 || distancePlayersY < scaledScreenHeight - 160)
 		&& (player1->isMoving() || player2->isMoving())) {
-		//std::cout << "DUPA" << std::endl;
-		if (!(scale + 0.01 >= 1)) {
+			if (!(scale + 0.01 >= 1)) {
 				scale += 0.01;
 			}
 		} 
@@ -256,7 +273,10 @@ bool Game::update() {
 	if (cameraRect.x > map->columns * 40 - scaledScreenWidth) cameraRect.x = map->columns * 40 - scaledScreenWidth;
 	if (cameraRect.y > map->rows * 40 - scaledScreenHeight) cameraRect.y = map->rows * 40 - scaledScreenHeight;
 
+
+
 	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
+
 	SDL_RenderClear(gRenderer);
 	map->drawMap(cameraRect.x, cameraRect.y, scale);
 	player1->draw(cameraRect.x, cameraRect.y);
@@ -265,8 +285,12 @@ bool Game::update() {
 	player1->update(directionPlayer1, (float)deltaTime, cameraRect.x, scaledScreenWidth);
 	player2->update(directionPlayer2, (float)deltaTime, cameraRect.x, scaledScreenWidth);
 	map->checkCollision(player1);
+	map->checkCollision(player2);
 
 	SDL_RenderPresent(gRenderer);
+
+
+
 	return quit;
 }
 

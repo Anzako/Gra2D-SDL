@@ -40,4 +40,5 @@ private:
 	myVector directionPlayer2;
 
 	int mouseX, mouseY;
+	bool player2keyboardControl;
 };

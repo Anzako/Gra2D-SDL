@@ -6,7 +6,7 @@
 
 class Player {
 public:
-	Player(float x, float y, float speed, const char* texName, int width, int height);
+	Player(float x, float y, float speed, const char* texName, int width, int height, PlayerColider* kolider);
 	void load();
 	void update(myVector direction, float deltaTime, float cameraX, int scaledScreenWidth);
 	void draw(float cameraX, float cameraY);

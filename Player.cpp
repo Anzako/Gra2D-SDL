@@ -1,14 +1,14 @@
 #include "headers/Player.h"
 #include "headers/TextureManager.h"
 
-Player::Player(float x, float y, float Speed, const char* texName, int width, int height) {
+Player::Player(float x, float y, float Speed, const char* texName, int width, int height, PlayerColider* kolider) {
 	position = { x, y };
 	movement = { 0, 0 };
 	textureName = texName;
 	speed = Speed;
 	mapWidth = width;
 	mapHeight = height;
-	colider = new PlayerColider(20);
+	colider = kolider;
 }
 
 void Player::load() {
@@ -30,12 +30,6 @@ void Player::update(myVector direction, float deltaTime, float cameraX, int scal
 	if (position.getY() > mapHeight - 40) position.setY(mapHeight - 40);
 
 	// borders for players not to go away from screen
-	//std::cout << cameraX + scaledScreenWidth << std::endl;
-	//std::cout << position.getX() << std::endl;
-	/*if (isMoving() && position.getX() > cameraX + scaledScreenWidth - 50) {
-		std::cout << "DUPA " << cameraX + scaledScreenWidth - 50 << std::endl;
-		position.setX(cameraX + scaledScreenWidth - 50);
-	}*/
 }
 
 void Player::draw(float cameraX, float cameraY) {
