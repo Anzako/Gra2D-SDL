@@ -8,7 +8,7 @@ class Player {
 public:
 	Player(float x, float y, float speed, const char* texName, int width, int height, PlayerColider* kolider);
 	void load();
-	void update(myVector direction, float deltaTime, float cameraX, int scaledScreenWidth);
+	void update(myVector direction, float deltaTime);
 	void draw(float cameraX, float cameraY);
 	void setPositionX(float x);
 	void setPositionY(float y);

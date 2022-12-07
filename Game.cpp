@@ -7,6 +7,9 @@
 Map* map;
 Player* player1;
 Player* player2;
+
+myVector* player1beginPosition = new myVector(40, 40);
+myVector* player2beginPosition = new myVector(40, 80);
 float scale = 1;
 
 SDL_Renderer* Game::gRenderer = nullptr;
@@ -90,11 +93,11 @@ bool Game::init(const char* title, bool fullscreen) {
 				}
 			}
 		}
-		map = new Map(25, 40, ScreenWidth, ScreenHeight, 40);
+		map = new Map(16, 16, ScreenWidth, ScreenHeight, 40);
 		PlayerColider* colider1 = new PlayerColider(20);
 		PlayerColider* colider2 = new PlayerColider(40, 40);
-		player1 = new Player(0, 0, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider1);
-		player2 = new Player(30, 30, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider2);
+		player1 = new Player(40, 40, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider1);
+		player2 = new Player(80, 40, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider2);
 	}
 
 	return success;
@@ -112,6 +115,11 @@ bool Game::loadMedia() {
 	}*/
 
 	return success;
+}
+
+void Game::beginYouuuuu() {
+	player1->setPositionX(40);
+	player1->setPositionY(40);
 }
 
 void drawCircle(SDL_Renderer* renderer, int x, int y, int radius, SDL_Color color)
@@ -234,7 +242,7 @@ bool Game::update() {
 
 	int scaledScreenWidth = (int)(ScreenWidth / scale);
 	int scaledScreenHeight = (int)(ScreenHeight / scale);
-	float maxScale = 0.8;
+	float maxScale = 1;
 
 	// skalowanie obrazu
 	SDL_RenderSetScale(gRenderer, scale, scale);
@@ -254,7 +262,7 @@ bool Game::update() {
 	}
 	else cameraRect.y = player1->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
 
-
+	/*
 	if ((distancePlayersX > scaledScreenWidth - 160 || distancePlayersY > scaledScreenHeight - 160)
 		&& (player1->isMoving() || player2->isMoving())) {
 		if (scale - 0.01 > maxScale) {
@@ -266,7 +274,7 @@ bool Game::update() {
 				scale += 0.01;
 			}
 		} 
-
+*/
 	// camera stop tracking when comes to end of map
 	if (cameraRect.x < 0) cameraRect.x = 0;
 	if (cameraRect.y < 0) cameraRect.y = 0;
@@ -282,10 +290,17 @@ bool Game::update() {
 	player1->draw(cameraRect.x, cameraRect.y);
 	player2->draw(cameraRect.x, cameraRect.y);
 
-	player1->update(directionPlayer1, (float)deltaTime, cameraRect.x, scaledScreenWidth);
-	player2->update(directionPlayer2, (float)deltaTime, cameraRect.x, scaledScreenWidth);
-	map->checkCollision(player1);
-	map->checkCollision(player2);
+	player1->update(directionPlayer1, (float)deltaTime);
+	player2->update(directionPlayer2, (float)deltaTime);
+	if (map->checkCollision(player1)) {
+		SDL_Delay(1000);
+		beginYouuuuu();
+		std::cout << "DUPA";
+	}
+	if (map->checkCollision(player2)) {
+		SDL_Delay(1000);
+		std::cout << "DUPA";
+	}
 
 	SDL_RenderPresent(gRenderer);
 

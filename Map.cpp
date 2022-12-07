@@ -91,7 +91,7 @@ void Map::drawMap(int cameraX, int cameraY, float scale) {
 }
 
 
-void Map::checkCollision(Player* player) {
+bool Map::checkCollision(Player* player) {
 	int type = 0;
 	//int cameraTileX = cameraX / tSize;
 	//int cameraTileY = cameraY / tSize;
@@ -105,8 +105,9 @@ void Map::checkCollision(Player* player) {
 			float playerY = player->getPosition().getY();
 			float tileX = col * tSize;
 			float tileY = row * tSize;
-			if (type == 3) {
+			if (type == 3 || type == 1) {
 				if (!player->getCollisionType()) {
+					
 					float left = playerX + player->getWidth() - tileX;
 					float right = tileX + tSize - playerX;
 					float top = playerY + player->getHeight() - tileY;
@@ -114,6 +115,9 @@ void Map::checkCollision(Player* player) {
 					//if (playerX + player->getWidth() > tileX && playerX < tileX + tSize
 						//&& playerY + player->getHeight() > tileY && playerY < tileY + tSize) {
 					if (left > 0 && right > 0 && top > 0 && bottom > 0) {
+						if (type == 1) {
+							return true;
+						}
 						float separatedX;
 						float separatedY;
 
@@ -135,7 +139,7 @@ void Map::checkCollision(Player* player) {
 							separatedY = 0;
 						}
 						else separatedX = 0;
-					
+
 						myVector wektor = { separatedX, separatedY };
 						player->addPosition(wektor);
 					}
@@ -152,6 +156,9 @@ void Map::checkCollision(Player* player) {
 					float distance = myVector::Subtract(playerWektor, rectWektor).length();
 
 					if (distance < radius) {
+						if (type == 1) {
+							return true;
+						}
 						if (myVector::Equals(playerWektor, rectWektor)) {
 							float left = rectWektor.getX() - tileX + radius;
 							float right = tileX + tSize - rectWektor.getX() + radius;
@@ -188,7 +195,7 @@ void Map::checkCollision(Player* player) {
 							myVector wektor = myVector::Subtract(playerWektor, rectWektor);
 							wektor.ScalarDivide(distance);
 							wektor.ScalarMultiply(radius - distance);
-							
+
 							player->addPosition(wektor);
 						}
 
@@ -203,5 +210,6 @@ void Map::checkCollision(Player* player) {
 			}
 		}
 	}
+	return false;
 }
 

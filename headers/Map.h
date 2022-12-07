@@ -12,7 +12,7 @@ public:
 	int tSize;
 	void loadMap();
 	void drawMap(int cameraX, int cameraY, float scale);
-	void checkCollision(Player* player);
+	bool checkCollision(Player* player);
 
 private:
 	SDL_Rect src, dest;

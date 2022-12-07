@@ -6,8 +6,8 @@
 #include "headers/myVector.h"
 #include "headers/Game.h"
 
-const int SCREEN_WIDTH = 1000;
-const int SCREEN_HEIGHT = 700;
+const int SCREEN_WIDTH = 600;
+const int SCREEN_HEIGHT = 600;
 
 Game* game = nullptr;
 const Uint8* state = SDL_GetKeyboardState(NULL);

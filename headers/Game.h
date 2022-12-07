@@ -17,6 +17,7 @@ public:
 	void render();
 	void close();
 	void clean();
+	void beginYouuuuu();
 
 	static SDL_Renderer* gRenderer;
 	SDL_Rect cameraRect = { 0, 0, 1000, 800};

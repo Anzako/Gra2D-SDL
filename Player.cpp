@@ -16,7 +16,7 @@ void Player::load() {
 
 }
 
-void Player::update(myVector direction, float deltaTime, float cameraX, int scaledScreenWidth) {
+void Player::update(myVector direction, float deltaTime) {
 	movement = direction.normalize();
 	movement.ScalarMultiply(deltaTime * speed);
 	position.Add(movement);
