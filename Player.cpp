@@ -1,8 +1,8 @@
 #include "headers/Player.h"
 #include "headers/TextureManager.h"
 
-Player::Player(float x, float y, float Speed, const char* texName, int width, int height, PlayerColider* kolider) {
-	position = { x, y };
+Player::Player(myVector wektor, float Speed, const char* texName, int width, int height, PlayerColider* kolider) {
+	position = wektor;
 	movement = { 0, 0 };
 	textureName = texName;
 	speed = Speed;
@@ -49,6 +49,11 @@ void Player::setPositionX(float x) {
 
 void Player::setPositionY(float y) {
 	this->position.setY(y);
+}
+
+void Player::setPosition(myVector wektor) {
+	this->position.setX(wektor.getX());
+	this->position.setY(wektor.getY());
 }
 
 bool Player::isMoving() {

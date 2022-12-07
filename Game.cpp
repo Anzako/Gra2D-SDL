@@ -8,8 +8,8 @@ Map* map;
 Player* player1;
 Player* player2;
 
-myVector* player1beginPosition = new myVector(40, 40);
-myVector* player2beginPosition = new myVector(40, 80);
+myVector player1beginPosition = { 40, 40 };
+myVector player2beginPosition = { 40, 80 };
 float scale = 1;
 
 SDL_Renderer* Game::gRenderer = nullptr;
@@ -96,8 +96,8 @@ bool Game::init(const char* title, bool fullscreen) {
 		map = new Map(16, 16, ScreenWidth, ScreenHeight, 40);
 		PlayerColider* colider1 = new PlayerColider(20);
 		PlayerColider* colider2 = new PlayerColider(40, 40);
-		player1 = new Player(40, 40, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider1);
-		player2 = new Player(80, 40, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider2);
+		player1 = new Player(player1beginPosition, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider1);
+		player2 = new Player(player2beginPosition, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider2);
 	}
 
 	return success;
@@ -118,8 +118,9 @@ bool Game::loadMedia() {
 }
 
 void Game::beginYouuuuu() {
-	player1->setPositionX(40);
-	player1->setPositionY(40);
+	player1->setPosition(player1beginPosition);
+	player2->setPosition(player2beginPosition);
+	
 }
 
 void drawCircle(SDL_Renderer* renderer, int x, int y, int radius, SDL_Color color)
@@ -295,11 +296,12 @@ bool Game::update() {
 	if (map->checkCollision(player1)) {
 		SDL_Delay(1000);
 		beginYouuuuu();
-		std::cout << "DUPA";
+		std::cout << "Player 1 win";
 	}
 	if (map->checkCollision(player2)) {
 		SDL_Delay(1000);
-		std::cout << "DUPA";
+		beginYouuuuu();
+		std::cout << "Player 2 win";
 	}
 
 	SDL_RenderPresent(gRenderer);
