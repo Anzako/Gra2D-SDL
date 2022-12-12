@@ -14,7 +14,7 @@ float clamp(float min, float max, float value) {
 	}
 }
 
-Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize) {
+Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize, const char* fileName) {
 	dirt = TextureManager::loadTexture("../assets/dirt.png");
 	grass = TextureManager::loadTexture("../assets/grass.png");
 	water = TextureManager::loadTexture("../assets/water.png");
@@ -31,21 +31,35 @@ Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize
 	for (int i = 0; i < rows; i++)
 		map[i] = new int[columns];
 
-	loadMap();
+	loadMap(fileName);
 	src = { 0, 0, tSize, tSize};
 	dest = { 0, 0, tSize, tSize};
 }
 
-void Map::loadMap() {
+Map::Map() {
+}
+
+Map::~Map()
+{
+}
+
+myVector Map::getObjective() {
+	return objectivePosition;
+}
+
+void Map::loadMap(const char* file) {
 	int number;
-	std::ifstream mapFile("../assets/mapFile.txt");
+	std::ifstream mapFile(file);
 	if (!mapFile.is_open()) {
-		std::cout << "duapa" << " \n";
+		std::cout << "Plik mapy nie zostal otwarty" << " \n";
 	} else {
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < columns; col++) {
 				mapFile >> number;
 				map[row][col] = number;
+				if (number == 1) {
+					objectivePosition = { (float)col * tSize, (float)row * tSize };
+				}
 			}
 		}
 	}

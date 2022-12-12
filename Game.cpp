@@ -3,14 +3,26 @@
 #include "headers/TextureManager.h"
 #include "headers/Map.h"
 #include "headers/Player.h"
+#include "headers/GameObject.h"
 
-Map* map;
+//Map* map;
+Map map;
+Map* maps;
+int mapNumber = 0;
 Player* player1;
 Player* player2;
+int player1wins = 0;
+int player2wins = 0;
+
+GameObject* arrow;
+SDL_RendererFlip flipType = SDL_FLIP_NONE;
+int angle = 0;
+myVector objectivePosition;
 
 myVector player1beginPosition = { 40, 40 };
 myVector player2beginPosition = { 40, 80 };
 float scale = 1;
+
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
@@ -28,10 +40,12 @@ Game::Game(int width, int height) {
 	TileSize = 40;
 	//int mapWidth;		dodac
 	//int maHeight;
-
+	
 	directionPlayer1 = { 0, 0 };
 	directionPlayer2 = { 0, 0 };
 
+	
+	
 	player2keyboardControl = false;
 }
 
@@ -93,11 +107,17 @@ bool Game::init(const char* title, bool fullscreen) {
 				}
 			}
 		}
-		map = new Map(16, 16, ScreenWidth, ScreenHeight, 40);
+		maps = new Map[3];
+		map = Map{ 16, 16, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
+		maps[0] = map;
+		objectivePosition = map.getObjective();
+
+		arrow = new GameObject("../assets/arrow.png", ScreenWidth/2 - 20, 0, 40, 40);
+
 		PlayerColider* colider1 = new PlayerColider(20);
 		PlayerColider* colider2 = new PlayerColider(40, 40);
-		player1 = new Player(player1beginPosition, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider1);
-		player2 = new Player(player2beginPosition, 0.5, "../assets/draco.png", map->columns * 40, map->rows * 40, colider2);
+		player1 = new Player(player1beginPosition, 0.5, "../assets/draco.png", maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize, colider1);
+		player2 = new Player(player2beginPosition, 0.5, "../assets/draco.png", maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize, colider2);
 	}
 
 	return success;
@@ -118,9 +138,36 @@ bool Game::loadMedia() {
 }
 
 void Game::beginYouuuuu() {
+	//SDL_Delay(1000);
 	player1->setPosition(player1beginPosition);
 	player2->setPosition(player2beginPosition);
+	myVector movement = { 0, 0 };
+	player1->setMovement(movement);
+	player2->setMovement(movement);
+	directionPlayer1 = movement;
+	directionPlayer2 = movement;
+	deltaTime = 0;
+	mapNumber++;
+
+	if (mapNumber == 1) {
+		map = Map{ 20, 16, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
+	}
+	else if (mapNumber == 2) {
+		map = Map{ 20, 20, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile3.txt" };
+	}
+	else if (mapNumber >= 3) {
+		std::cout << "-------------------- KONIEC GRY ------------------- \n";
+		std::cout << " Statystyki \n";
+		std::cout << "Player1 wygral " << player1wins << " razy\n";
+		std::cout << "Player2 wygral " << player2wins << " razy\n";
+	}
 	
+	objectivePosition = map.getObjective();
+	maps[mapNumber] = map;
+	player1->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
+	player2->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
+
+	SDL_Delay(1000);
 }
 
 void drawCircle(SDL_Renderer* renderer, int x, int y, int radius, SDL_Color color)
@@ -279,30 +326,50 @@ bool Game::update() {
 	// camera stop tracking when comes to end of map
 	if (cameraRect.x < 0) cameraRect.x = 0;
 	if (cameraRect.y < 0) cameraRect.y = 0;
-	if (cameraRect.x > map->columns * 40 - scaledScreenWidth) cameraRect.x = map->columns * 40 - scaledScreenWidth;
-	if (cameraRect.y > map->rows * 40 - scaledScreenHeight) cameraRect.y = map->rows * 40 - scaledScreenHeight;
-
+	
+	if (cameraRect.x > maps[mapNumber].columns * TileSize - scaledScreenWidth) cameraRect.x = maps[mapNumber].columns * TileSize - scaledScreenWidth;
+	if (cameraRect.y > maps[mapNumber].rows * TileSize - scaledScreenHeight) cameraRect.y = maps[mapNumber].rows * TileSize - scaledScreenHeight;
 
 
 	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
-
+	
 	SDL_RenderClear(gRenderer);
-	map->drawMap(cameraRect.x, cameraRect.y, scale);
+	maps[mapNumber].drawMap(cameraRect.x, cameraRect.y, scale);
 	player1->draw(cameraRect.x, cameraRect.y);
 	player2->draw(cameraRect.x, cameraRect.y);
+	
+	
+	if (abs(objectivePosition.getX() - cameraRect.x + scaledScreenWidth / 2) < abs(objectivePosition.getY() - cameraRect.y + scaledScreenHeight / 2)) {
+		if (objectivePosition.getY() > cameraRect.y + scaledScreenHeight / 2) {
+			angle = 90;
+		}
+		else angle = 270;
+	}
+	else {
+		if (objectivePosition.getX() > cameraRect.x + scaledScreenWidth / 2) {
+			angle = 0;
+		}
+		else angle = 180;
+	}
+
+	if (objectivePosition.getX() >= cameraRect.x + ScreenWidth || objectivePosition.getY() >= cameraRect.y + ScreenHeight) {
+		arrow->Render(angle, NULL, flipType);
+	}
+	
+
+	if (maps[mapNumber].checkCollision(player1)) {
+		std::cout << "Player 1 win";
+		player1wins ++;
+		beginYouuuuu();
+	}
+	if (maps[mapNumber].checkCollision(player2)) {
+		std::cout << "Player 2 win";
+		player2wins++;
+		beginYouuuuu();
+	}
 
 	player1->update(directionPlayer1, (float)deltaTime);
 	player2->update(directionPlayer2, (float)deltaTime);
-	if (map->checkCollision(player1)) {
-		SDL_Delay(1000);
-		beginYouuuuu();
-		std::cout << "Player 1 win";
-	}
-	if (map->checkCollision(player2)) {
-		SDL_Delay(1000);
-		beginYouuuuu();
-		std::cout << "Player 2 win";
-	}
 
 	SDL_RenderPresent(gRenderer);
 

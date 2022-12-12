@@ -20,6 +20,11 @@ void GameObject::Render() {
 	SDL_RenderCopy(Game::gRenderer, objTexture, NULL, &destRect);
 }
 
+void GameObject::Render(double angle, SDL_Point* center, SDL_RendererFlip flip)
+{
+    SDL_RenderCopyEx(Game::gRenderer, objTexture, NULL, &destRect, angle, center, flip);
+}
+
 void GameObject::Destroy() {
 	SDL_DestroyTexture(objTexture);
 }

@@ -9,6 +9,7 @@ public:
 
 	void Update(myVector* wektor);
 	void Render();
+	void Render(double angle, SDL_Point* center, SDL_RendererFlip flip);
 	void Destroy();
 
 private:

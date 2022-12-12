@@ -6,10 +6,13 @@
 
 class Player {
 public:
-	Player(myVector position, float speed, const char* texName, int width, int height, PlayerColider* kolider);
+	Player(myVector position, float speed, const char* texName, int mWidth, int mHeight, PlayerColider* kolider);
 	void load();
 	void update(myVector direction, float deltaTime);
 	void draw(float cameraX, float cameraY);
+	void updateParameters(int mWidth, int mHeight);
+
+
 	void setPositionX(float x);
 	void setPositionY(float y);
 	void setPosition(myVector wektor);
@@ -20,6 +23,9 @@ public:
 	float getHeight();
 	float getRadius();
 	void addPosition(myVector wektor);
+	void setMovement(myVector wektor);
+
+
 
 private:
 	float speed;

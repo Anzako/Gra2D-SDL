@@ -1,13 +1,13 @@
 #include "headers/Player.h"
 #include "headers/TextureManager.h"
 
-Player::Player(myVector wektor, float Speed, const char* texName, int width, int height, PlayerColider* kolider) {
+Player::Player(myVector wektor, float Speed, const char* texName, int mWidth, int mHeight, PlayerColider* kolider) {
 	position = wektor;
 	movement = { 0, 0 };
 	textureName = texName;
 	speed = Speed;
-	mapWidth = width;
-	mapHeight = height;
+	mapWidth = mWidth;
+	mapHeight = mHeight;
 	colider = kolider;
 }
 
@@ -39,6 +39,11 @@ void Player::draw(float cameraX, float cameraY) {
 	TextureManager::drawTile(texture, src, player1Rect, 126);
 }
 
+void Player::updateParameters(int mWidth, int mHeight) {
+	mapWidth = mWidth;
+	mapHeight = mHeight;
+}
+
 myVector Player::getPosition() {
 	return position;
 }
@@ -54,6 +59,10 @@ void Player::setPositionY(float y) {
 void Player::setPosition(myVector wektor) {
 	this->position.setX(wektor.getX());
 	this->position.setY(wektor.getY());
+}
+
+void Player::setMovement(myVector wektor) {
+	this->movement = wektor;
 }
 
 bool Player::isMoving() {
