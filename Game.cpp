@@ -19,8 +19,8 @@ SDL_RendererFlip flipType = SDL_FLIP_NONE;
 int angle = 0;
 myVector objectivePosition;
 
-myVector player1beginPosition = { 40, 40 };
-myVector player2beginPosition = { 40, 80 };
+myVector player1beginPosition;
+myVector player2beginPosition;
 float scale = 1;
 
 
@@ -34,6 +34,7 @@ Game::Game(int width, int height) {
 	NOW = SDL_GetPerformanceCounter();
 	LAST = 0;
 	deltaTime = 0;
+	srand(time(NULL));
 
 	ScreenWidth = width;
 	ScreenHeight = height;
@@ -47,6 +48,24 @@ Game::Game(int width, int height) {
 	
 	
 	player2keyboardControl = false;
+}
+
+myVector drawPlayerPosition(Map mapa) {
+	
+	float playerX;
+	float playerY;
+
+	for (;;) {
+		playerX = 1 + rand() % mapa.columns -2;
+		playerY = 1 + rand() % mapa.rows -2;
+
+		if (mapa.getTileNumber(playerX, playerY) != 3) {
+			break;
+		}
+	}
+	//std::cout << playerX << "   " << playerY << std::endl;
+	myVector wektor = { playerX * mapa.tSize, playerY * mapa.tSize };
+	return wektor;
 }
 
 Game::~Game() {}
@@ -114,9 +133,11 @@ bool Game::init(const char* title, bool fullscreen) {
 
 		arrow = new GameObject("../assets/arrow.png", ScreenWidth/2 - 20, 0, 40, 40);
 
+		player1beginPosition = drawPlayerPosition(maps[mapNumber]);
+		player2beginPosition = drawPlayerPosition(maps[mapNumber]);
 		PlayerColider* colider1 = new PlayerColider(20);
 		PlayerColider* colider2 = new PlayerColider(40, 40);
-		player1 = new Player(player1beginPosition, 0.5, "../assets/draco.png", maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize, colider1);
+		player1 = new Player(player1beginPosition, 0.5, "../assets/jajo.png", maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize, colider1);
 		player2 = new Player(player2beginPosition, 0.5, "../assets/draco.png", maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize, colider2);
 	}
 
@@ -139,13 +160,7 @@ bool Game::loadMedia() {
 
 void Game::beginYouuuuu() {
 	//SDL_Delay(1000);
-	player1->setPosition(player1beginPosition);
-	player2->setPosition(player2beginPosition);
-	myVector movement = { 0, 0 };
-	player1->setMovement(movement);
-	player2->setMovement(movement);
-	directionPlayer1 = movement;
-	directionPlayer2 = movement;
+	
 	deltaTime = 0;
 	mapNumber++;
 
@@ -164,6 +179,15 @@ void Game::beginYouuuuu() {
 	
 	objectivePosition = map.getObjective();
 	maps[mapNumber] = map;
+	player1beginPosition = drawPlayerPosition(maps[mapNumber]);
+	player2beginPosition = drawPlayerPosition(maps[mapNumber]);
+	player1->setPosition(player1beginPosition);
+	player2->setPosition(player2beginPosition);
+	myVector movement = { 0, 0 };
+	player1->setMovement(movement);
+	player2->setMovement(movement);
+	directionPlayer1 = movement;
+	directionPlayer2 = movement;
 	player1->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
 	player2->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
 
@@ -340,40 +364,43 @@ bool Game::update() {
 	
 	
 	if (abs(objectivePosition.getX() - cameraRect.x + scaledScreenWidth / 2) < abs(objectivePosition.getY() - cameraRect.y + scaledScreenHeight / 2)) {
-		if (objectivePosition.getY() > cameraRect.y + scaledScreenHeight / 2) {
+		if (objectivePosition.getX() > cameraRect.x) {
 			angle = 90;
-		}
-		else angle = 270;
-	}
-	else {
-		if (objectivePosition.getX() > cameraRect.x + scaledScreenWidth / 2) {
-			angle = 0;
 		}
 		else angle = 180;
 	}
+	else {
+		if (objectivePosition.getY() > cameraRect.y) {
+			angle = 0;
+		}
+		else angle = 270;
+	}
 
-	if (objectivePosition.getX() >= cameraRect.x + ScreenWidth || objectivePosition.getY() >= cameraRect.y + ScreenHeight) {
+	if (objectivePosition.getX() >= cameraRect.x + ScreenWidth 
+		|| objectivePosition.getY() >= cameraRect.y + ScreenHeight 
+		|| objectivePosition.getX() < cameraRect.x
+		|| objectivePosition.getY() < cameraRect.y) {
 		arrow->Render(angle, NULL, flipType);
 	}
 	
 
-	if (maps[mapNumber].checkCollision(player1)) {
+	if (player1->checkCollision(maps[mapNumber])) {
 		std::cout << "Player 1 win";
 		player1wins ++;
 		beginYouuuuu();
 	}
-	if (maps[mapNumber].checkCollision(player2)) {
+	if (player2->checkCollision(maps[mapNumber])) {
 		std::cout << "Player 2 win";
 		player2wins++;
 		beginYouuuuu();
 	}
 
+	player1->isOnGround(maps[mapNumber]);
+
 	player1->update(directionPlayer1, (float)deltaTime);
 	player2->update(directionPlayer2, (float)deltaTime);
 
 	SDL_RenderPresent(gRenderer);
-
-
 
 	return quit;
 }

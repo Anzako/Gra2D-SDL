@@ -1,14 +1,29 @@
 #include "headers/Player.h"
 #include "headers/TextureManager.h"
 
+float clamp(float min, float max, float value) {
+	if (value < min) {
+		return min;
+	}
+	else if (value > max) {
+		return max;
+	}
+	else {
+		return value;
+	}
+}
+
 Player::Player(myVector wektor, float Speed, const char* texName, int mWidth, int mHeight, PlayerColider* kolider) {
 	position = wektor;
 	movement = { 0, 0 };
 	textureName = texName;
-	speed = Speed;
 	mapWidth = mWidth;
 	mapHeight = mHeight;
 	colider = kolider;
+
+	speed = Speed;
+	distanceToPeak = 5.0f;
+	jumpHeight = 3.0f;
 }
 
 void Player::load() {
@@ -17,9 +32,12 @@ void Player::load() {
 }
 
 void Player::update(myVector direction, float deltaTime) {
+	//float jumpVelocity = 
+	float gravitate = (2.0f * jumpHeight * speed * speed) / (distanceToPeak * distanceToPeak);
 	movement = direction.normalize();
 	movement.ScalarMultiply(deltaTime * speed);
 	position.Add(movement);
+	position.setY(position.getY() + gravitate);
 
 	// top and left borders
 	if (position.getX() < 0) position.setX(0);
@@ -71,6 +89,127 @@ bool Player::isMoving() {
 		move = false;
 	}
 	return move;
+}
+
+bool Player::isOnGround(Map map) {
+	int tileX = position.getX() / map.tSize;
+	int tileY = position.getY() / map.tSize;
+	std::cout << position.getX() << " " << tileX << " \n";
+	if (map.getTileNumber(tileX, tileY + 1) == 3) {
+		std::cout << "Dotykasz ziemi \n";
+	} else std::cout << "nie dotykasz ziemi \n";
+	//std::cout << (int)(39 / 40) + " \n";
+	return true;
+}
+
+bool Player::checkCollision(Map map) {
+	int type = 0;
+
+	for (int row = 0; row < map.rows; row++) {
+		for (int col = 0; col < map.columns; col++) {
+			type = map.getTileNumber(row, col);
+			float playerX = position.getX();
+			float playerY = position.getY();
+			float tileX = col * map.tSize;
+			float tileY = row * map.tSize;
+			if (type == 3 || type == 1) {
+				if (!getCollisionType()) {
+
+					float left = playerX + getWidth() - tileX;
+					float right = tileX + map.tSize - playerX;
+					float top = playerY + getHeight() - tileY;
+					float bottom = tileY + map.tSize - playerY;
+				
+					if (left > 0 && right > 0 && top > 0 && bottom > 0) {
+						if (type == 1) {
+							return true;
+						}
+						float separatedX;
+						float separatedY;
+
+						if (left < right) {
+							separatedX = -left;
+						}
+						else {
+							separatedX = right;
+						}
+
+						if (top < bottom) {
+							separatedY = -top;
+						}
+						else {
+							separatedY = bottom;
+						}
+
+						if (abs(separatedX) < abs(separatedY)) {
+							separatedY = 0;
+						}
+						else separatedX = 0;
+
+						myVector wektor = { separatedX, separatedY };
+						addPosition(wektor);
+					}
+				}
+				if (getCollisionType()) {
+					float radius = getRadius();
+					float centerX = playerX + radius;
+					float centerY = playerY + radius;
+
+					myVector playerWektor = { centerX, centerY };
+					myVector rectWektor = { clamp(tileX, tileX + map.tSize, centerX),
+						clamp(tileY, tileY + map.tSize, centerY) };
+
+					float distance = myVector::Subtract(playerWektor, rectWektor).length();
+
+					if (distance < radius) {
+						if (type == 1) {
+							return true;
+						}
+						if (myVector::Equals(playerWektor, rectWektor)) {
+							float left = rectWektor.getX() - tileX + radius;
+							float right = tileX + map.tSize - rectWektor.getX() + radius;
+							float top = rectWektor.getY() - tileY + radius;
+							float bottom = tileY + map.tSize - rectWektor.getY() + radius;
+
+							float separatedX;
+							float separatedY;
+
+							if (left < right) {
+								separatedX = -left;
+							}
+							else {
+								separatedX = right;
+							}
+
+							if (top < bottom) {
+								separatedY = -top;
+							}
+							else {
+								separatedY = bottom;
+							}
+
+							if (abs(separatedX) < abs(separatedY)) {
+								separatedY = 0;
+							}
+							else separatedX = 0;
+
+							myVector wektor = { separatedX, separatedY };
+							wektor.Coordinates();
+							addPosition(wektor);
+						}
+						else {
+							myVector wektor = myVector::Subtract(playerWektor, rectWektor);
+							wektor.ScalarDivide(distance);
+							wektor.ScalarMultiply(radius - distance);
+
+							addPosition(wektor);
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
 
 bool Player::getCollisionType() {

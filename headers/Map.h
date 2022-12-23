@@ -1,6 +1,5 @@
 #pragma once
 #include "Game.h"
-#include "Player.h"
 
 class Map {
 public:
@@ -13,8 +12,8 @@ public:
 	int tSize;
 	void loadMap(const char* file);
 	void drawMap(int cameraX, int cameraY, float scale);
-	bool checkCollision(Player* player);
 	myVector getObjective();
+	int getTileNumber(int x, int y);
 
 private:
 	SDL_Rect src, dest;
