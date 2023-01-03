@@ -26,7 +26,7 @@ public:
 	float getRadius();
 	void addPosition(myVector wektor);
 	void setMovement(myVector wektor);
-	
+	float getSpeed();
 
 
 private:

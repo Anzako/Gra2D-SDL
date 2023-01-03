@@ -5,7 +5,6 @@
 #include "headers/Player.h"
 #include "headers/GameObject.h"
 
-//Map* map;
 Map map;
 Map* maps;
 int mapNumber = 0;
@@ -22,12 +21,27 @@ myVector objectivePosition;
 myVector player1beginPosition;
 myVector player2beginPosition;
 float scale = 1;
-
+float frameTime;
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
 const int JOYSTICK_DEAD_ZONE = 8000;
 SDL_Joystick* gGameController = NULL;
+
+float distanceToPeak = 80.0f;
+float jumpHeight = 80.0f;
+bool isOnGround = true;
+
+myVector player2Velocity;
+myVector player2Przemieszczenie;
+float velY = 0;
+//myVector player2Acc;
+
+float jump_velocity = (2 * jumpHeight * 200) / distanceToPeak;
+float gravity = (2 * jumpHeight * 200 * 200)
+/ (distanceToPeak * distanceToPeak);
+float jumpTime = 0;
+
 
 Game::Game(int width, int height) {
 	// delta time
@@ -46,7 +60,7 @@ Game::Game(int width, int height) {
 	directionPlayer2 = { 0, 0 };
 
 	
-	
+
 	player2keyboardControl = false;
 }
 
@@ -63,7 +77,7 @@ myVector drawPlayerPosition(Map mapa) {
 			break;
 		}
 	}
-	//std::cout << playerX << "   " << playerY << std::endl;
+	
 	myVector wektor = { playerX * mapa.tSize, playerY * mapa.tSize };
 	return wektor;
 }
@@ -222,6 +236,9 @@ bool Game::update() {
 	LAST = NOW;
 	NOW = SDL_GetPerformanceCounter();
 	deltaTime = (double)((NOW - LAST) * 1000 / (double)SDL_GetPerformanceFrequency());
+	frameTime = ((double)(NOW - LAST) / (double)10000000);
+
+	
 
 	while (SDL_PollEvent(&e) != 0)
 	{
@@ -289,6 +306,26 @@ bool Game::update() {
 		}
 		else directionPlayer1.setX(0.0f);
 		
+		if (state[SDL_SCANCODE_SPACE]) {
+			printf("Key pressed: SPACE!\n");
+			if (jumpTime <= 0.1)
+			{
+				//std::cout << "Jumping " << std::endl;
+				isOnGround = false;
+				float jump_velocity = (2 * jumpHeight * 200) / distanceToPeak;
+				float gravity = (2 * jumpHeight * 200 * 200)
+					/ (distanceToPeak * distanceToPeak);
+				velY = -jump_velocity;
+				std::cout << "HEIGHT: " << jumpHeight << std::endl;
+				std::cout << "DISTANCE: " << distanceToPeak << std::endl;
+				std::cout << "V0 : " << jump_velocity << std::endl;
+				std::cout << "G: " << gravity << std::endl << std::endl;
+				
+			}
+			break;
+		}
+			
+
 		if (player2keyboardControl) {
 			if (state[SDL_SCANCODE_W]) {
 				directionPlayer2.setY(-1.0f);
@@ -322,7 +359,7 @@ bool Game::update() {
 	// --------------------------- CAMERA -----------------------------------
 	// camera track 2 players
 
-	int distancePlayersX = abs(player1->getPosition().getX() - player2->getPosition().getX()) - 40;
+	/*int distancePlayersX = abs(player1->getPosition().getX() - player2->getPosition().getX()) - 40;
 	int distancePlayersY = abs(player1->getPosition().getY() - player2->getPosition().getY()) - 40;
 
 	if (player1->getPosition().getX() > player2->getPosition().getX()) {
@@ -332,7 +369,7 @@ bool Game::update() {
 	if (player1->getPosition().getY() > player2->getPosition().getY()) {
 		cameraRect.y = player2->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
 	}
-	else cameraRect.y = player1->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
+	else cameraRect.y = player1->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;*/
 
 	/*
 	if ((distancePlayersX > scaledScreenWidth - 160 || distancePlayersY > scaledScreenHeight - 160)
@@ -346,7 +383,13 @@ bool Game::update() {
 				scale += 0.01;
 			}
 		} 
-*/
+	*/
+
+	// camera track 1 player
+
+	cameraRect.x = player2->getPosition().getX() - ScreenWidth / 2;
+	cameraRect.y = player2->getPosition().getY() - 400;
+
 	// camera stop tracking when comes to end of map
 	if (cameraRect.x < 0) cameraRect.x = 0;
 	if (cameraRect.y < 0) cameraRect.y = 0;
@@ -359,11 +402,11 @@ bool Game::update() {
 	
 	SDL_RenderClear(gRenderer);
 	maps[mapNumber].drawMap(cameraRect.x, cameraRect.y, scale);
-	player1->draw(cameraRect.x, cameraRect.y);
+	//player1->draw(cameraRect.x, cameraRect.y);
 	player2->draw(cameraRect.x, cameraRect.y);
 	
 	
-	if (abs(objectivePosition.getX() - cameraRect.x + scaledScreenWidth / 2) < abs(objectivePosition.getY() - cameraRect.y + scaledScreenHeight / 2)) {
+	/*if (abs(objectivePosition.getX() - cameraRect.x + scaledScreenWidth / 2) < abs(objectivePosition.getY() - cameraRect.y + scaledScreenHeight / 2)) {
 		if (objectivePosition.getX() > cameraRect.x) {
 			angle = 90;
 		}
@@ -381,24 +424,32 @@ bool Game::update() {
 		|| objectivePosition.getX() < cameraRect.x
 		|| objectivePosition.getY() < cameraRect.y) {
 		arrow->Render(angle, NULL, flipType);
+	}*/
+	
+	
+	if (!isOnGround) {
+		velY += gravity * frameTime;
+		player2Przemieszczenie = myVector(directionPlayer2.getX() * 0.5 * deltaTime, velY * frameTime + 0.5 * gravity * frameTime * frameTime);
+		jumpTime += frameTime;
+	}
+	else {
+		velY = 0;
+		player2Przemieszczenie = myVector(directionPlayer2.getX() * 0.5 * deltaTime, 0.0);
+		jumpTime = 0;
+	}
+
+	player2->update(player2Przemieszczenie, (float)deltaTime);
+	
+	if (player2->checkCollision(maps[mapNumber])) {
+		isOnGround = true;
+		jumpTime = 0;
+	}
+	else {
+		isOnGround = false;
 	}
 	
-
-	if (player1->checkCollision(maps[mapNumber])) {
-		std::cout << "Player 1 win";
-		player1wins ++;
-		beginYouuuuu();
-	}
-	if (player2->checkCollision(maps[mapNumber])) {
-		std::cout << "Player 2 win";
-		player2wins++;
-		beginYouuuuu();
-	}
-
-	player1->isOnGround(maps[mapNumber]);
-
-	player1->update(directionPlayer1, (float)deltaTime);
-	player2->update(directionPlayer2, (float)deltaTime);
+	//player1->checkCollision(maps[mapNumber]);
+	//player1->update(directionPlayer1, (float)deltaTime);
 
 	SDL_RenderPresent(gRenderer);
 
