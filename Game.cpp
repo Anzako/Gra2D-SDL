@@ -28,7 +28,7 @@ SDL_Renderer* Game::gRenderer = nullptr;
 const int JOYSTICK_DEAD_ZONE = 8000;
 SDL_Joystick* gGameController = NULL;
 
-float distanceToPeak = 80.0f;
+float distanceToPeak = 20.0f;
 float jumpHeight = 80.0f;
 bool isOnGround = true;
 
@@ -37,8 +37,8 @@ myVector player2Przemieszczenie;
 float velY = 0;
 //myVector player2Acc;
 
-float jump_velocity = (2 * jumpHeight * 200) / distanceToPeak;
-float gravity = (2 * jumpHeight * 200 * 200)
+float jump_velocity = (2 * jumpHeight * 100) / distanceToPeak;
+float gravity = (2 * jumpHeight * 100 * 100)
 / (distanceToPeak * distanceToPeak);
 float jumpTime = 0;
 
@@ -94,25 +94,25 @@ bool Game::init(const char* title, bool fullscreen) {
 	}
 	else
 	{
-		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-		{
-			printf("Warning: Linear texture filtering not enabled!");
-		}
-		if (SDL_NumJoysticks() < 1)
-		{
-			player2keyboardControl = true;
-			printf("Warning: No joysticks connected!\n");
-		}
-		else
-		{
-			//Load joystick
-			gGameController = SDL_JoystickOpen(0);
-			if (gGameController == NULL)
-			{
-				player2keyboardControl = true;
-				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
-			}
-		}
+		//if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+		//{
+		//	printf("Warning: Linear texture filtering not enabled!");
+		//}
+		//if (SDL_NumJoysticks() < 1)
+		//{
+		//	player2keyboardControl = true;
+		//	printf("Warning: No joysticks connected!\n");
+		//}
+		//else
+		//{
+		//	//Load joystick
+		//	gGameController = SDL_JoystickOpen(0);
+		//	if (gGameController == NULL)
+		//	{
+		//		player2keyboardControl = true;
+		//		printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+		//	}
+		//}
 
 		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
@@ -141,14 +141,15 @@ bool Game::init(const char* title, bool fullscreen) {
 			}
 		}
 		maps = new Map[3];
-		map = Map{ 16, 16, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
+		map = Map{ 16, 28, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
 		maps[0] = map;
-		objectivePosition = map.getObjective();
+		//objectivePosition = map.getObjective();
 
 		arrow = new GameObject("../assets/arrow.png", ScreenWidth/2 - 20, 0, 40, 40);
 
-		player1beginPosition = drawPlayerPosition(maps[mapNumber]);
-		player2beginPosition = drawPlayerPosition(maps[mapNumber]);
+		//player1beginPosition = drawPlayerPosition(maps[mapNumber]);
+		//player2beginPosition = drawPlayerPosition(maps[mapNumber]);
+		player2beginPosition = myVector{400, 400};
 		PlayerColider* colider1 = new PlayerColider(20);
 		PlayerColider* colider2 = new PlayerColider(40, 40);
 		player1 = new Player(player1beginPosition, 0.5, "../assets/jajo.png", maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize, colider1);
@@ -248,45 +249,45 @@ bool Game::update() {
 			quit = true;
 		}
 
-		if (e.type == SDL_JOYAXISMOTION)
-		{
-			//Motion on controller 0
-			if (e.jaxis.which == 0)
-			{
-				//X axis motion
-				if (e.jaxis.axis == 0)
-				{
-					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-					{
-						directionPlayer2.setX(-1.0f);
-					}
-					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-					{
-						directionPlayer2.setX(1.0f);
-					}
-					else
-					{
-						directionPlayer2.setX(0.0f);
-					}
-				}
-				//Y axis motion
-				else if (e.jaxis.axis == 1)
-				{
-					if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-					{
-						directionPlayer2.setY(-1.0f);
-					}
-					else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-					{
-						directionPlayer2.setY(1.0f);
-					}
-					else
-					{
-						directionPlayer2.setY(0.0f);
-					}
-				}
-			}
-		}
+		//if (e.type == SDL_JOYAXISMOTION)
+		//{
+		//	//Motion on controller 0
+		//	if (e.jaxis.which == 0)
+		//	{
+		//		//X axis motion
+		//		if (e.jaxis.axis == 0)
+		//		{
+		//			if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+		//			{
+		//				directionPlayer2.setX(-1.0f);
+		//			}
+		//			else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+		//			{
+		//				directionPlayer2.setX(1.0f);
+		//			}
+		//			else
+		//			{
+		//				directionPlayer2.setX(0.0f);
+		//			}
+		//		}
+		//		//Y axis motion
+		//		else if (e.jaxis.axis == 1)
+		//		{
+		//			if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
+		//			{
+		//				directionPlayer2.setY(-1.0f);
+		//			}
+		//			else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
+		//			{
+		//				directionPlayer2.setY(1.0f);
+		//			}
+		//			else
+		//			{
+		//				directionPlayer2.setY(0.0f);
+		//			}
+		//		}
+		//	}
+		//}
 
 		const Uint8* state = SDL_GetKeyboardState(NULL);
 		
@@ -308,13 +309,14 @@ bool Game::update() {
 		
 		if (state[SDL_SCANCODE_SPACE]) {
 			printf("Key pressed: SPACE!\n");
-			if (jumpTime <= 0.1)
+			if (jumpTime <= 0.1 && isOnGround)
 			{
 				//std::cout << "Jumping " << std::endl;
 				isOnGround = false;
-				float jump_velocity = (2 * jumpHeight * 200) / distanceToPeak;
-				float gravity = (2 * jumpHeight * 200 * 200)
+				jump_velocity = (2 * jumpHeight * 100) / distanceToPeak;
+				gravity = (2 * jumpHeight * 100 * 100)
 					/ (distanceToPeak * distanceToPeak);
+
 				velY = -jump_velocity;
 				std::cout << "HEIGHT: " << jumpHeight << std::endl;
 				std::cout << "DISTANCE: " << distanceToPeak << std::endl;
@@ -324,9 +326,26 @@ bool Game::update() {
 			}
 			break;
 		}
-			
 
-		if (player2keyboardControl) {
+		if (state[SDL_SCANCODE_O]) {
+			jumpHeight += 10;
+		}
+		if (state[SDL_SCANCODE_P]) {
+			if (jumpHeight - 10 > 0) {
+				jumpHeight -= 10;
+			}
+		}
+
+		if (state[SDL_SCANCODE_K]) {
+			distanceToPeak += 5;
+		}
+		if (state[SDL_SCANCODE_L]) {
+			if (distanceToPeak - 5 > 0) {
+				distanceToPeak -= 5;
+			}
+		}
+
+		if (!player2keyboardControl) {
 			if (state[SDL_SCANCODE_W]) {
 				directionPlayer2.setY(-1.0f);
 			}
