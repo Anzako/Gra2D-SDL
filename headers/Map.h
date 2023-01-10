@@ -24,6 +24,8 @@ private:
 	SDL_Texture* brick;
 	SDL_Texture* floor;
 	SDL_Texture* stone;
+	SDL_Texture* fence;
+	SDL_Texture* cloud;
 	int **map;
 
 	myVector objectivePosition;

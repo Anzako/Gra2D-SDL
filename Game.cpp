@@ -140,11 +140,15 @@ bool Game::init(const char* title, bool fullscreen) {
 				}
 			}
 		}
-		maps = new Map[3];
-		map = Map{ 16, 28, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
+		maps = new Map[4];
+		map = Map{ 16, 84, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
 		maps[0] = map;
 		map = Map{ 16, 28, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
 		maps[1] = map;
+		map = Map{ 6, 28, ScreenWidth, ScreenHeight, 120, "../assets/mapFile3.txt" };
+		maps[2] = map;
+		map = Map{ 6, 28, ScreenWidth, ScreenHeight, 120, "../assets/mapFile4.txt" };
+		maps[3] = map;
 		//objectivePosition = map.getObjective();
 
 		arrow = new GameObject("../assets/arrow.png", ScreenWidth/2 - 20, 0, 40, 40);
@@ -422,7 +426,10 @@ bool Game::update() {
 	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
 	
 	SDL_RenderClear(gRenderer);
+
+	maps[3].drawMap(cameraRect.x * 0.7f, cameraRect.y, scale);
 	maps[1].drawMap(cameraRect.x * 0.5f, cameraRect.y, scale);
+	maps[2].drawMap(cameraRect.x * 0.7f, cameraRect.y, scale);
 	maps[mapNumber].drawMap(cameraRect.x, cameraRect.y, scale);
 	
 

@@ -9,6 +9,8 @@ Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize
 	brick = TextureManager::loadTexture("../assets/brick.png");
 	floor = TextureManager::loadTexture("../assets/floor.png");
 	stone = TextureManager::loadTexture("../assets/stone.png");
+	fence = TextureManager::loadTexture("../assets/fence.png");
+	cloud = TextureManager::loadTexture("../assets/cloud.png");
 
 	rows = rowNum;
 	columns = colNum;
@@ -91,7 +93,15 @@ void Map::drawMap(int cameraX, int cameraY, float scale) {
 				case 4:
 					TextureManager::drawTile(stone, src, dest, NULL);
 					break;
-
+				case 5:
+					TextureManager::drawTile(fence, src, dest, NULL);
+					break;
+				case 6: 
+					TextureManager::drawTile(water, src, dest, NULL);
+					break;
+				case 7:
+					TextureManager::drawTile(cloud, src, dest, NULL);
+					break;
 			}
 		}
 	}
