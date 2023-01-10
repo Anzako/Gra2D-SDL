@@ -3,11 +3,12 @@
 #include <fstream>
 
 Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize, const char* fileName) {
-	dirt = TextureManager::loadTexture("../assets/dirt.png");
+	underground = TextureManager::loadTexture("../assets/underground.png");
 	grass = TextureManager::loadTexture("../assets/grass.png");
 	water = TextureManager::loadTexture("../assets/water.png");
 	brick = TextureManager::loadTexture("../assets/brick.png");
 	floor = TextureManager::loadTexture("../assets/floor.png");
+	stone = TextureManager::loadTexture("../assets/stone.png");
 
 	rows = rowNum;
 	columns = colNum;
@@ -77,20 +78,20 @@ void Map::drawMap(int cameraX, int cameraY, float scale) {
 
 			switch (type) {
 				case 0:
-					TextureManager::drawTile(grass, src, dest, NULL);
 					break;
 				case 1:
-					TextureManager::drawTile(water, src, dest, NULL);
+					TextureManager::drawTile(grass, src, dest, NULL);
 					break;
 				case 2:
-					TextureManager::drawTile(dirt, src, dest, NULL);
+					TextureManager::drawTile(underground, src, dest, NULL);
 					break;
 				case 3:
 					TextureManager::drawTile(brick, src, dest, NULL);
 					break;
 				case 4:
-					TextureManager::drawTile(floor, src, dest, NULL);
+					TextureManager::drawTile(stone, src, dest, NULL);
 					break;
+
 			}
 		}
 	}

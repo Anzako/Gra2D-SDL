@@ -53,7 +53,7 @@ void Player::draw(float cameraX, float cameraY) {
 	SDL_Rect player1Rect = { position.getX() - cameraX, position.getY() - cameraY, 40, 40 };
 	SDL_Rect src = { 0, 0, 40, 40 };
 	SDL_Texture* texture = TextureManager::loadTexture(textureName);
-	TextureManager::drawTile(texture, src, player1Rect, 126);
+	TextureManager::drawTile(texture, src, player1Rect, 255);
 }
 
 void Player::updateParameters(int mWidth, int mHeight) {
@@ -112,7 +112,7 @@ bool Player::checkCollision(Map map) {
 			float playerY = position.getY();
 			float tileX = col * map.tSize;
 			float tileY = row * map.tSize;
-			if (type == 3 || type == 1) {
+			if (type == 3 || type == 1 || type == 4) {
 				if (!getCollisionType()) {
 
 					float left = playerX + getWidth() - tileX;

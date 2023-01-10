@@ -28,8 +28,8 @@ SDL_Renderer* Game::gRenderer = nullptr;
 const int JOYSTICK_DEAD_ZONE = 8000;
 SDL_Joystick* gGameController = NULL;
 
-float distanceToPeak = 20.0f;
-float jumpHeight = 80.0f;
+float distanceToPeak = 30.0f;
+float jumpHeight = 100.0f;
 bool isOnGround = true;
 
 myVector player2Velocity;
@@ -143,6 +143,8 @@ bool Game::init(const char* title, bool fullscreen) {
 		maps = new Map[3];
 		map = Map{ 16, 28, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
 		maps[0] = map;
+		map = Map{ 16, 28, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
+		maps[1] = map;
 		//objectivePosition = map.getObjective();
 
 		arrow = new GameObject("../assets/arrow.png", ScreenWidth/2 - 20, 0, 40, 40);
@@ -173,41 +175,41 @@ bool Game::loadMedia() {
 	return success;
 }
 
-void Game::beginYouuuuu() {
-	//SDL_Delay(1000);
-	
-	deltaTime = 0;
-	mapNumber++;
-
-	if (mapNumber == 1) {
-		map = Map{ 20, 16, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
-	}
-	else if (mapNumber == 2) {
-		map = Map{ 20, 20, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile3.txt" };
-	}
-	else if (mapNumber >= 3) {
-		std::cout << "-------------------- KONIEC GRY ------------------- \n";
-		std::cout << " Statystyki \n";
-		std::cout << "Player1 wygral " << player1wins << " razy\n";
-		std::cout << "Player2 wygral " << player2wins << " razy\n";
-	}
-	
-	objectivePosition = map.getObjective();
-	maps[mapNumber] = map;
-	player1beginPosition = drawPlayerPosition(maps[mapNumber]);
-	player2beginPosition = drawPlayerPosition(maps[mapNumber]);
-	player1->setPosition(player1beginPosition);
-	player2->setPosition(player2beginPosition);
-	myVector movement = { 0, 0 };
-	player1->setMovement(movement);
-	player2->setMovement(movement);
-	directionPlayer1 = movement;
-	directionPlayer2 = movement;
-	player1->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
-	player2->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
-
-	SDL_Delay(1000);
-}
+//void Game::beginYouuuuu() {
+//	//SDL_Delay(1000);
+//	
+//	deltaTime = 0;
+//	mapNumber++;
+//
+//	if (mapNumber == 1) {
+//		map = Map{ 20, 16, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
+//	}
+//	else if (mapNumber == 2) {
+//		map = Map{ 20, 20, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile3.txt" };
+//	}
+//	else if (mapNumber >= 3) {
+//		std::cout << "-------------------- KONIEC GRY ------------------- \n";
+//		std::cout << " Statystyki \n";
+//		std::cout << "Player1 wygral " << player1wins << " razy\n";
+//		std::cout << "Player2 wygral " << player2wins << " razy\n";
+//	}
+//	
+//	objectivePosition = map.getObjective();
+//	maps[mapNumber] = map;
+//	player1beginPosition = drawPlayerPosition(maps[mapNumber]);
+//	player2beginPosition = drawPlayerPosition(maps[mapNumber]);
+//	player1->setPosition(player1beginPosition);
+//	player2->setPosition(player2beginPosition);
+//	myVector movement = { 0, 0 };
+//	player1->setMovement(movement);
+//	player2->setMovement(movement);
+//	directionPlayer1 = movement;
+//	directionPlayer2 = movement;
+//	player1->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
+//	player2->updateParameters(maps[mapNumber].columns * TileSize, maps[mapNumber].rows * TileSize);
+//
+//	SDL_Delay(1000);
+//}
 
 void drawCircle(SDL_Renderer* renderer, int x, int y, int radius, SDL_Color color)
 {
@@ -420,7 +422,11 @@ bool Game::update() {
 	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
 	
 	SDL_RenderClear(gRenderer);
+	maps[1].drawMap(cameraRect.x * 0.5f, cameraRect.y, scale);
 	maps[mapNumber].drawMap(cameraRect.x, cameraRect.y, scale);
+	
+
+
 	//player1->draw(cameraRect.x, cameraRect.y);
 	player2->draw(cameraRect.x, cameraRect.y);
 	

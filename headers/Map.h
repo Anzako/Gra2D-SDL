@@ -18,11 +18,12 @@ public:
 private:
 	SDL_Rect src, dest;
 
-	SDL_Texture* dirt;
+	SDL_Texture* underground;
 	SDL_Texture* grass;
 	SDL_Texture* water;
 	SDL_Texture* brick;
 	SDL_Texture* floor;
+	SDL_Texture* stone;
 	int **map;
 
 	myVector objectivePosition;
