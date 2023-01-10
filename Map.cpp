@@ -11,6 +11,7 @@ Map::Map(int rowNum, int colNum, int screenWidth, int screenHeight, int tileSize
 	stone = TextureManager::loadTexture("../assets/stone.png");
 	fence = TextureManager::loadTexture("../assets/fence.png");
 	cloud = TextureManager::loadTexture("../assets/cloud.png");
+	sun = TextureManager::loadTexture("../assets/sun.png");
 
 	rows = rowNum;
 	columns = colNum;
@@ -101,6 +102,9 @@ void Map::drawMap(int cameraX, int cameraY, float scale) {
 					break;
 				case 7:
 					TextureManager::drawTile(cloud, src, dest, NULL);
+					break;
+				case 8:
+					TextureManager::drawTile(sun, src, dest, NULL);
 					break;
 			}
 		}

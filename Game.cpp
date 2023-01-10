@@ -143,7 +143,7 @@ bool Game::init(const char* title, bool fullscreen) {
 		maps = new Map[4];
 		map = Map{ 16, 84, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile.txt" };
 		maps[0] = map;
-		map = Map{ 16, 28, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
+		map = Map{ 16, 84, ScreenWidth, ScreenHeight, TileSize, "../assets/mapFile2.txt" };
 		maps[1] = map;
 		map = Map{ 6, 28, ScreenWidth, ScreenHeight, 120, "../assets/mapFile3.txt" };
 		maps[2] = map;
@@ -427,9 +427,9 @@ bool Game::update() {
 	
 	SDL_RenderClear(gRenderer);
 
-	maps[3].drawMap(cameraRect.x * 0.7f, cameraRect.y, scale);
-	maps[1].drawMap(cameraRect.x * 0.5f, cameraRect.y, scale);
+	maps[3].drawMap(cameraRect.x * 0.4, cameraRect.y, scale);
 	maps[2].drawMap(cameraRect.x * 0.7f, cameraRect.y, scale);
+	maps[1].drawMap(cameraRect.x * 0.5f, cameraRect.y, scale);
 	maps[mapNumber].drawMap(cameraRect.x, cameraRect.y, scale);
 	
 
