@@ -112,7 +112,7 @@ bool Player::checkCollision(Map map) {
 			float playerY = position.getY();
 			float tileX = col * map.tSize;
 			float tileY = row * map.tSize;
-			if (type == 3 || type == 1 || type == 4) {
+			if (type == 3 || type == 1 || type == 4 || type == 2) {
 				if (!getCollisionType()) {
 
 					float left = playerX + getWidth() - tileX;

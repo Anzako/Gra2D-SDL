@@ -41,6 +41,9 @@ float jump_velocity = (2 * jumpHeight * 100) / distanceToPeak;
 float gravity = (2 * jumpHeight * 100 * 100)
 / (distanceToPeak * distanceToPeak);
 float jumpTime = 0;
+float mapSpeed1 = 0.5f;
+float mapSpeed2 = 0.6f;
+float mapSpeed3 = 0.7f;
 
 
 Game::Game(int width, int height) {
@@ -255,46 +258,6 @@ bool Game::update() {
 			quit = true;
 		}
 
-		//if (e.type == SDL_JOYAXISMOTION)
-		//{
-		//	//Motion on controller 0
-		//	if (e.jaxis.which == 0)
-		//	{
-		//		//X axis motion
-		//		if (e.jaxis.axis == 0)
-		//		{
-		//			if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-		//			{
-		//				directionPlayer2.setX(-1.0f);
-		//			}
-		//			else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-		//			{
-		//				directionPlayer2.setX(1.0f);
-		//			}
-		//			else
-		//			{
-		//				directionPlayer2.setX(0.0f);
-		//			}
-		//		}
-		//		//Y axis motion
-		//		else if (e.jaxis.axis == 1)
-		//		{
-		//			if (e.jaxis.value < -JOYSTICK_DEAD_ZONE)
-		//			{
-		//				directionPlayer2.setY(-1.0f);
-		//			}
-		//			else if (e.jaxis.value > JOYSTICK_DEAD_ZONE)
-		//			{
-		//				directionPlayer2.setY(1.0f);
-		//			}
-		//			else
-		//			{
-		//				directionPlayer2.setY(0.0f);
-		//			}
-		//		}
-		//	}
-		//}
-
 		const Uint8* state = SDL_GetKeyboardState(NULL);
 		
 		if (state[SDL_SCANCODE_UP]) {
@@ -324,31 +287,54 @@ bool Game::update() {
 					/ (distanceToPeak * distanceToPeak);
 
 				velY = -jump_velocity;
-				std::cout << "HEIGHT: " << jumpHeight << std::endl;
+				/*std::cout << "HEIGHT: " << jumpHeight << std::endl;
 				std::cout << "DISTANCE: " << distanceToPeak << std::endl;
 				std::cout << "V0 : " << jump_velocity << std::endl;
-				std::cout << "G: " << gravity << std::endl << std::endl;
+				std::cout << "G: " << gravity << std::endl << std::endl;*/
 				
 			}
 			break;
 		}
 
 		if (state[SDL_SCANCODE_O]) {
-			jumpHeight += 10;
+			if (mapSpeed1 + 0.1f < 1) {
+				mapSpeed1 += 0.1f;
+			}
+			std::cout << "mapSpeed1 = " << mapSpeed1 << std::endl;
 		}
 		if (state[SDL_SCANCODE_P]) {
-			if (jumpHeight - 10 > 0) {
-				jumpHeight -= 10;
+			if (mapSpeed1 - 0.1f > 0) {
+				mapSpeed1 -= 0.1f;
 			}
+			std::cout << "mapSpeed1 = " << mapSpeed1 << std::endl;
 		}
 
 		if (state[SDL_SCANCODE_K]) {
-			distanceToPeak += 5;
+			if (mapSpeed2 + 0.1f < 1) {
+				mapSpeed2 += 0.1f;
+			}
+			std::cout << "mapSpeed2 = " << mapSpeed2 << std::endl;
+			
 		}
 		if (state[SDL_SCANCODE_L]) {
-			if (distanceToPeak - 5 > 0) {
-				distanceToPeak -= 5;
+			if (mapSpeed2 - 0.1f > 0) {
+				mapSpeed2 -= 0.1f;
 			}
+			std::cout << "mapSpeed2 = " << mapSpeed2 << std::endl;
+		}
+
+		if (state[SDL_SCANCODE_N]) {
+			if (mapSpeed3 + 0.1f < 1) {
+				mapSpeed3 += 0.1f;
+			}
+			std::cout << "mapSpeed3 = " << mapSpeed3 << std::endl;
+
+		}
+		if (state[SDL_SCANCODE_M]) {
+			if (mapSpeed3 - 0.1f > 0) {
+				mapSpeed3 -= 0.1f;
+			}
+			std::cout << "mapSpeed3 = " << mapSpeed3 << std::endl;
 		}
 
 		if (!player2keyboardControl) {
@@ -382,33 +368,6 @@ bool Game::update() {
 	SDL_RenderSetScale(gRenderer, scale, scale);
 
 	// --------------------------- CAMERA -----------------------------------
-	// camera track 2 players
-
-	/*int distancePlayersX = abs(player1->getPosition().getX() - player2->getPosition().getX()) - 40;
-	int distancePlayersY = abs(player1->getPosition().getY() - player2->getPosition().getY()) - 40;
-
-	if (player1->getPosition().getX() > player2->getPosition().getX()) {
-		cameraRect.x = player2->getPosition().getX() + distancePlayersX/2 - scaledScreenWidth / 2;
-	} else cameraRect.x = player1->getPosition().getX() + distancePlayersX/2 - scaledScreenWidth / 2;
-
-	if (player1->getPosition().getY() > player2->getPosition().getY()) {
-		cameraRect.y = player2->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;
-	}
-	else cameraRect.y = player1->getPosition().getY() + distancePlayersY / 2 - scaledScreenHeight / 2;*/
-
-	/*
-	if ((distancePlayersX > scaledScreenWidth - 160 || distancePlayersY > scaledScreenHeight - 160)
-		&& (player1->isMoving() || player2->isMoving())) {
-		if (scale - 0.01 > maxScale) {
-			scale -= 0.01;
-		}
-	} else if ((distancePlayersX < scaledScreenWidth - 160 || distancePlayersY < scaledScreenHeight - 160)
-		&& (player1->isMoving() || player2->isMoving())) {
-			if (!(scale + 0.01 >= 1)) {
-				scale += 0.01;
-			}
-		} 
-	*/
 
 	// camera track 1 player
 
@@ -422,42 +381,18 @@ bool Game::update() {
 	if (cameraRect.x > maps[mapNumber].columns * TileSize - scaledScreenWidth) cameraRect.x = maps[mapNumber].columns * TileSize - scaledScreenWidth;
 	if (cameraRect.y > maps[mapNumber].rows * TileSize - scaledScreenHeight) cameraRect.y = maps[mapNumber].rows * TileSize - scaledScreenHeight;
 
-
 	// wczytywanie mapy w zale¿noœci od po³o¿enia kamery
 	
 	SDL_RenderClear(gRenderer);
 
-	maps[3].drawMap(cameraRect.x * 0.4, cameraRect.y, scale);
-	maps[2].drawMap(cameraRect.x * 0.7f, cameraRect.y, scale);
-	maps[1].drawMap(cameraRect.x * 0.5f, cameraRect.y, scale);
+	maps[3].drawMap(cameraRect.x * mapSpeed3, cameraRect.y, scale);
+	maps[2].drawMap(cameraRect.x * mapSpeed2, cameraRect.y, scale);
+	maps[1].drawMap(cameraRect.x * mapSpeed1, cameraRect.y, scale);
 	maps[mapNumber].drawMap(cameraRect.x, cameraRect.y, scale);
 	
-
-
 	//player1->draw(cameraRect.x, cameraRect.y);
 	player2->draw(cameraRect.x, cameraRect.y);
-	
-	
-	/*if (abs(objectivePosition.getX() - cameraRect.x + scaledScreenWidth / 2) < abs(objectivePosition.getY() - cameraRect.y + scaledScreenHeight / 2)) {
-		if (objectivePosition.getX() > cameraRect.x) {
-			angle = 90;
-		}
-		else angle = 180;
-	}
-	else {
-		if (objectivePosition.getY() > cameraRect.y) {
-			angle = 0;
-		}
-		else angle = 270;
-	}
 
-	if (objectivePosition.getX() >= cameraRect.x + ScreenWidth 
-		|| objectivePosition.getY() >= cameraRect.y + ScreenHeight 
-		|| objectivePosition.getX() < cameraRect.x
-		|| objectivePosition.getY() < cameraRect.y) {
-		arrow->Render(angle, NULL, flipType);
-	}*/
-	
 	
 	if (!isOnGround) {
 		velY += gravity * frameTime;
